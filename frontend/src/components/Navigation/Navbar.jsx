@@ -1,16 +1,16 @@
 import "./navbar.css";
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { TextAlignJustify } from "lucide-react";
 
 export default function Navbar() {
-  const [active, setActive] = useState("/home");
   const [menuOpen, setMenuOpen] = useState(false);
+  const location = useLocation();
+  const active = location.pathname;
 
   const links = [
     { label: "Home", id: "/home" },
     { label: "About", id: "/about" },
-    { label: "Contact", id: "/contact" },
     { label: "Get Started", id: "/login" }
   ];
 
@@ -27,10 +27,7 @@ export default function Navbar() {
               to={link.id}
               key={link.id}
               className={`nav-link ${active === link.id ? "active" : ""}`}
-              onClick={() => {
-                setActive(link.id);
-                setMenuOpen(false);
-              }}
+              onClick={() => setMenuOpen(false)}
             >
               {link.label}
             </Link>

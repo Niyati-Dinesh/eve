@@ -22,3 +22,12 @@ body {
    color:white;
 }
 
+.app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-main {
+  flex: 1; /* 👈 THIS pushes the footer down */
+}

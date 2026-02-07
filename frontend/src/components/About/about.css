@@ -1,0 +1,840 @@
+@charset "UTF-8";
+
+/* CSS Variables for E.V.E. Theme - Matching AIAF */
+:root {
+  --font: Nunito, -apple-system, "Open Sans", system-ui, sans-serif;
+  --font-title: "Unbounded", sans-serif;
+  --white: #ffffff;
+  --white20: #ffffff33;
+  --white80: rgba(255, 255, 255, 0.8);
+  --black: #000000;
+  --dark: #000a18;
+  --dark0: #000a1800;
+  --gradient-start: #ff148d;
+  --gradient-end: #ff1115;
+  --side-padding: clamp(20px, 5rem, 80px);
+  --distance: 56px;
+  --pink-bg: #ff14a5bf;
+  --pink-bg0: #ff14a500;
+}
+
+/* Hero Section */
+.about .hero {
+  min-height: 100vh;
+  min-height: 100svh;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+  font-size: clamp(16px, 1.5rem, 24px);
+  padding: 124px var(--side-padding);
+}
+
+.about .hero.js_detect-scroll .title,
+.about .hero.js_detect-scroll .text {
+  backface-visibility: hidden;
+  transition-property: transform, opacity;
+  transition-duration: 0.8s;
+  transition-timing-function: ease;
+  transform: translate3d(0, 0, 0);
+}
+
+.about .hero.js_detect-scroll:not(.visible) .title,
+.about .hero.js_detect-scroll:not(.visible) .text {
+  opacity: 0;
+  pointer-events: none;
+  transform: translate3d(0, var(--distance), 0);
+}
+
+.about .hero.js_detect-scroll .text {
+  transition-delay: 0.1s;
+}
+
+.about .hero .title {
+  font-size: clamp(36px, 4.5rem, 56px);
+  margin-bottom: clamp(5px, 0.9375rem, 15px);
+  font-family: var(--font-title);
+  font-weight: bold;
+  color: var(--white);
+  letter-spacing: -0.02em;
+}
+
+.about .hero .text {
+  width: 100%;
+  margin: 0 auto;
+  max-width: 22.166em;
+  color: var(--white);
+  font-family: var(--font);
+}
+
+.about .hero .bg-video {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  overflow: hidden;
+}
+.about .hero .bg-video:after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background-image:
+    linear-gradient(
+      to bottom,
+      var(--dark0) calc(100% - 100px),
+      var(--dark) 100%
+    ),
+    radial-gradient(
+      58.55% 107.2% at 52.28% 27.24%,
+      var(--dark0) 37.59%,
+      var(--dark) 100%
+    );
+}
+.about .hero .bg-video > * {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+@media only screen and (orientation: portrait) {
+		.about .hero .bg-video > * {
+				height: 100vw;
+				width: 100vh;
+				
+				top: 50%;
+				left: 50%;
+				transform: translate3d(-50%, -50%, 0) rotate(90deg);
+		}
+        .about .hero .title {
+            font-size: 32px;
+            margin-top: 50%;
+        }
+        .about .hero .text{
+            font-size: 16px;
+        }
+}
+/* Exists/Why EVE Section */
+.about .exists {
+  overflow: hidden;
+  position: relative;
+  font-size: clamp(16px, 1.125rem, 18px);
+  padding: 0 var(--side-padding);
+  background: var(--dark);
+}
+
+.about .exists .wrap {
+  padding: clamp(60px, 5rem, 80px) 0 clamp(60px, 17.5rem, 280px) 0;
+}
+
+.about .exists .wrap > *:not(.media) {
+  position: relative;
+  z-index: 2;
+}
+
+.about .exists .title {
+  font-size: 48px;
+  margin-bottom: 15px;
+  font-family: var(--font-title);
+  font-weight: bold;
+  color: var(--white);
+  letter-spacing: -0.02em;
+}
+
+.about .exists .descr {
+  max-width: 25em;
+  color: var(--white);
+  font-family: var(--font);
+}
+
+.about .exists .media {
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.about .exists .media:after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background-image:
+    linear-gradient(
+      to bottom,
+      var(--dark) 0%,
+      var(--dark0) 10%,
+      var(--dark0) 90%,
+      var(--dark) 100%
+    ),
+    linear-gradient(
+      to right,
+      var(--dark) 0%,
+      var(--dark0) 10%,
+      var(--dark0) 90%,
+      var(--dark) 100%
+    );
+}
+
+.about .exists .media > * {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate3d(-50%, -50%, 0);
+  object-fit: cover;
+  object-position: center;
+}
+
+.about .exists ol,
+.about .exists li {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.about .exists ol {
+  counter-reset: ex;
+  font-size: 18px;
+  color: var(--white);
+  display: flex;
+  flex-direction: column;
+  gap: 43px;
+  font-family: var(--font);
+}
+
+.about .exists li {
+  flex: 0 0 auto;
+  width: 100%;
+  padding-left: clamp(69px, 6.1875rem, 99px);
+  position: relative;
+  text-wrap: auto;
+}
+
+.about .exists li:before {
+  content: counter(ex, decimal-leading-zero);
+  counter-increment: ex;
+  position: absolute;
+  top: 50%;
+  left: 0;
+  transform: translate3d(0, -50%, 0);
+  font: bold 33px/1.2 var(--font-title);
+  background: linear-gradient(
+    to bottom,
+    var(--gradient-start) 0%,
+    var(--gradient-end) 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  backface-visibility: hidden;
+  letter-spacing: -0.02em;
+}
+
+@media only screen and (max-width: 999px) {
+  .about .exists .wrap {
+    padding: 60px 0 80px 0;
+  }
+
+  .about .exists .text {
+    text-align: center;
+  }
+
+  .about .exists .title {
+    font-size: 36px;
+    line-height: 1.1;
+  }
+
+  .about .exists .title br {
+    display: none;
+  }
+
+  .about .exists .descr {
+    margin-left: auto;
+    margin-right: auto;
+    font-size: 16px;
+    line-height: 1.5;
+  }
+
+  .about .exists .media {
+    margin: 40px calc(var(--side-padding) * -1) 60px
+      calc(var(--side-padding) * -1);
+    height: 400px;
+    position: relative;
+  }
+
+  .about .exists .media > * {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    position: absolute;
+    top: 0;
+    left: 0;
+    transform: none;
+  }
+
+  .about .exists ol {
+    font-size: 16px;
+    gap: 30px;
+  }
+
+  .about .exists li {
+    padding-left: 60px;
+  }
+
+  .about .exists li:before {
+    font-size: 28px;
+  }
+}
+
+@media only screen and (min-width: 1000px) {
+  .about .exists .wrap {
+    display: grid;
+    margin: 0 auto;
+    max-width: 1098px;
+    grid-template-columns: 1fr 450px;
+    grid-template-rows: auto 1fr;
+  }
+
+  .about .exists .text {
+    max-width: 450px;
+    margin: 0 auto;
+  }
+
+  .about .exists .title {
+    margin-right: -0.5em;
+  }
+
+  .about .exists ol {
+    margin-top: 13.5rem;
+    grid-area: 1/2/3/3;
+  }
+
+  .about .exists .media {
+    margin-bottom: calc(clamp(60px, 17.5rem, 280px) * -1);
+  }
+
+  .about .exists .media > * {
+    width: 180%;
+    height: auto;
+    min-height: 100%;
+  }
+}
+
+.about .exists .js_detect-scroll .title,
+.about .exists .js_detect-scroll .descr,
+.about .exists .js_detect-scroll li {
+  backface-visibility: hidden;
+  transition-property: transform, opacity;
+  transition-duration: 0.8s;
+  transition-timing-function: ease;
+  transform: translate3d(0, 0, 0);
+}
+
+.about .exists .js_detect-scroll:not(.visible) .title,
+.about .exists .js_detect-scroll:not(.visible) .descr,
+.about .exists .js_detect-scroll:not(.visible) li {
+  opacity: 0;
+  pointer-events: none;
+  transform: translate3d(0, var(--distance), 0);
+}
+
+.about .exists .js_detect-scroll .descr {
+  transition-delay: 0.1s;
+}
+
+.about .exists .js_detect-scroll li:nth-child(1) {
+  transition-delay: 0s;
+}
+
+.about .exists .js_detect-scroll li:nth-child(2) {
+  transition-delay: 0.1s;
+}
+
+.about .exists .js_detect-scroll li:nth-child(3) {
+  transition-delay: 0.2s;
+}
+
+.about .exists .js_detect-scroll li:nth-child(4) {
+  transition-delay: 0.3s;
+}
+
+.about .exists .js_detect-scroll li:nth-child(5) {
+  transition-delay: 0.4s;
+}
+
+.about .exists .js_detect-scroll li:nth-child(6) {
+  transition-delay: 0.5s;
+}
+
+/* Roadmap Section */
+.about .roadmap {
+  overflow: hidden;
+  padding: clamp(50px, 6.25rem, 100px) var(--side-padding)
+    clamp(120px, 9.375rem, 150px) var(--side-padding);
+  font-size: 18px;
+  position: relative;
+  z-index: 4;
+  background: var(--dark);
+}
+
+.about .roadmap .wrap {
+  position: relative;
+}
+
+.about .roadmap .top-title {
+  font-size: 48px;
+  font-family: var(--font-title);
+  font-weight: bold;
+  color: var(--white);
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+
+.about .roadmap .swiper {
+  overflow: visible !important;
+  position: relative;
+}
+
+.about .roadmap .swiper-wrapper {
+  display: flex;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.about .roadmap .swiper-slide {
+  flex: 0 0 auto;
+  width: 33.333%;
+  position: relative;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.about .roadmap .swiper-slide:before,
+.about .roadmap .swiper-slide:after {
+  content: "";
+  position: absolute;
+  top: 106px;
+  left: 0;
+}
+
+.about .roadmap .swiper-slide:before {
+  height: 2px;
+  background: linear-gradient(
+    to right,
+    #da3eb900 0%,
+    #da3eb9 50%,
+    #da3eb900 100%
+  );
+  width: 50%;
+  transform: translate3d(-50%, 0, 0);
+}
+
+.about .roadmap .swiper-slide:after {
+  width: 12px;
+  height: 12px;
+  background: radial-gradient(
+    100.25% 94.17% at 50% 4.17%,
+    #590069 51.66%,
+    #fe148d 100%
+  );
+  box-shadow: 0px 0px 6px 2px rgba(0, 0, 0, 0.85);
+  border-radius: 50%;
+  transform: translate3d(0, -50%, 0);
+}
+
+.about .roadmap .swiper-slide .small {
+  color: var(--white);
+  opacity: 0.4;
+  margin-bottom: 5px;
+  line-height: 25px;
+  font-family: var(--font);
+}
+
+.about .roadmap .swiper-slide .title {
+  font-size: 22px;
+  margin-bottom: 83px;
+  margin-top: 0;
+  font-family:
+    Nunito,
+    -apple-system,
+    "Open Sans",
+    system-ui,
+    sans-serif;
+  font-weight: 600;
+  color: var(--white);
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+
+.about .roadmap .descr ul,
+.about .roadmap .descr li {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.about .roadmap .descr ul {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.about .roadmap .descr li {
+  color: var(--white);
+  font-family: var(--font);
+  margin: 0;
+  padding: 0;
+  line-height: 1.5;
+}
+
+@media only screen and (max-width: 999px) {
+  .about .roadmap {
+    padding: 50px 20px 80px;
+  }
+
+  .about .roadmap .top-title {
+    text-align: center;
+    margin-bottom: 60px;
+    font-size: 36px;
+  }
+
+  .about .roadmap .swiper {
+    margin-top: 0;
+  }
+
+  .about .roadmap .swiper:before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 60px;
+    width: 2px;
+    height: 100%;
+    background: #da3eb9;
+    opacity: 0.2;
+    z-index: -1;
+  }
+
+  .about .roadmap .swiper-wrapper {
+    flex-direction: column;
+    gap: 40px;
+  }
+
+  .about .roadmap .swiper-slide {
+    width: 100%;
+    min-width: auto;
+    padding: 0 0 0 120px;
+  }
+
+  .about .roadmap .swiper-slide:before,
+  .about .roadmap .swiper-slide:after {
+    left: 60px;
+    top: 20px;
+  }
+
+  .about .roadmap .swiper-slide:before {
+    width: 2px;
+    height: 50%;
+    background: linear-gradient(
+      to bottom,
+      #da3eb900 0%,
+      #da3eb9 50%,
+      #da3eb900 100%
+    );
+    transform: translate3d(0, -50%, 0);
+  }
+
+  .about .roadmap .swiper-slide:after {
+    transform: translate3d(-50%, 0, 0);
+  }
+
+  .about .roadmap .swiper-slide .title {
+    margin-bottom: 20px;
+    font-size: 20px;
+  }
+
+  .about .roadmap .swiper-slide .small {
+    font-size: 14px;
+  }
+
+  .about .roadmap .descr {
+    font-size: 16px;
+  }
+}
+
+@media only screen and (min-width: 1000px) {
+  .about .roadmap {
+    padding-left: calc(var(--side-padding) + 20.75rem);
+    font-size: clamp(14px, 1.125rem, 18px);
+  }
+
+  .about .roadmap:before {
+    content: "";
+    position: absolute;
+    top: calc(clamp(50px, 6.25rem, 100px) + 106px);
+    left: 50%;
+    width: 100vw;
+    transform: translate3d(-50%, 0, 0);
+    height: 2px;
+    background: #da3eb9;
+    opacity: 0.2;
+    z-index: 0;
+  }
+
+  .about .roadmap .top-title {
+    position: absolute;
+    top: -125px;
+    left: -350px;
+    font-size: clamp(32px, 4rem, 64px);
+    font-family: "Unbounded", sans-serif;
+  }
+
+  .about .roadmap .swiper-slide {
+    padding-left: 3.75rem;
+  }
+
+  .about .roadmap .swiper-slide:before,
+  .about .roadmap .swiper-slide:after {
+    left: 3.75rem;
+  }
+
+  .about .roadmap .swiper-slide .title {
+    font-size: clamp(24px, 2.25rem, 36px);
+    line-height: 36px;
+  }
+}
+
+.about .roadmap .js_detect-scroll .title,
+.about .roadmap .js_detect-scroll .small,
+.about .roadmap .js_detect-scroll .descr {
+  backface-visibility: hidden;
+  transition-property: transform, opacity;
+  transition-duration: 0.8s;
+  transition-timing-function: ease;
+  transform: translate3d(0, 0, 0);
+}
+
+.about .roadmap .js_detect-scroll .swiper-slide:before,
+.about .roadmap .js_detect-scroll .swiper-slide:after {
+  backface-visibility: hidden;
+  transition-property: transform, opacity;
+  transition-duration: 0.8s;
+  transition-timing-function: ease;
+}
+
+.about .roadmap .js_detect-scroll:not(.visible) .title,
+.about .roadmap .js_detect-scroll:not(.visible) .small,
+.about .roadmap .js_detect-scroll:not(.visible) .descr {
+  opacity: 0;
+  pointer-events: none;
+  transform: translate3d(var(--distance), 0, 0);
+}
+
+.about .roadmap .js_detect-scroll:not(.visible) .swiper-slide:before,
+.about .roadmap .js_detect-scroll:not(.visible) .swiper-slide:after {
+  opacity: 0;
+}
+
+.about .roadmap .js_detect-scroll .swiper-slide:nth-child(1) .small,
+.about .roadmap .js_detect-scroll .swiper-slide:nth-child(1) .title,
+.about .roadmap .js_detect-scroll .swiper-slide:nth-child(1) .descr,
+.about .roadmap .js_detect-scroll .swiper-slide:nth-child(1):before,
+.about .roadmap .js_detect-scroll .swiper-slide:nth-child(1):after {
+  transition-delay: 0.1s;
+}
+
+.about .roadmap .js_detect-scroll .swiper-slide:nth-child(2) .small,
+.about .roadmap .js_detect-scroll .swiper-slide:nth-child(2) .title,
+.about .roadmap .js_detect-scroll .swiper-slide:nth-child(2) .descr,
+.about .roadmap .js_detect-scroll .swiper-slide:nth-child(2):before,
+.about .roadmap .js_detect-scroll .swiper-slide:nth-child(2):after {
+  transition-delay: 0.2s;
+}
+
+.about .roadmap .js_detect-scroll .swiper-slide:nth-child(3) .small,
+.about .roadmap .js_detect-scroll .swiper-slide:nth-child(3) .title,
+.about .roadmap .js_detect-scroll .swiper-slide:nth-child(3) .descr,
+.about .roadmap .js_detect-scroll .swiper-slide:nth-child(3):before,
+.about .roadmap .js_detect-scroll .swiper-slide:nth-child(3):after {
+  transition-delay: 0.3s;
+}
+
+/* Join/CTA Section */
+.about .join {
+  position: relative;
+  text-align: center;
+  padding: clamp(100px, 9.375rem, 150px) var(--side-padding) 150px
+    var(--side-padding);
+  font-size: 18px;
+  overflow: hidden;
+  background: var(--dark);
+}
+
+.about .join .text {
+  display: flex;
+  flex-direction: column;
+}
+
+.about .join > *:not(.bg) {
+  position: relative;
+  z-index: 2;
+}
+
+.about .join .title {
+  font-size: clamp(55px, 5rem, 48px);
+  margin-bottom: 15px;
+  font-family: var(--font-title);
+  font-weight: bold;
+  color: var(--white);
+  letter-spacing: -0.02em;
+  word-spacing: 4px;
+}
+
+.about .join .descr {
+  margin: 0 auto;
+  max-width: 26em;
+  text-wrap: auto;
+  width: 100%;
+  color: var(--white);
+  font-family: var(--font);
+}
+
+.about .join .btn {
+  align-self: center;
+  min-width: 210px;
+  margin-top: 30px;
+  padding: 15px 40px;
+  color: white;
+  background: linear-gradient(135deg, #a840f7, #ff4fd3, #008cff);
+  border: none;
+  border-radius: 50px;
+  font-size: 18px;
+  font-weight: bold;
+  font-family: var(--font);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.about .join .btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(255, 20, 141, 0.3);
+}
+
+.about .join .bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  overflow: hidden;
+  background-image:
+    linear-gradient(
+      to right,
+      var(--dark) 0%,
+      var(--dark0) 100px,
+      var(--dark0) calc(100% - 100px),
+      var(--dark) 100%
+    ),
+    linear-gradient(
+      to bottom,
+      var(--dark) 0%,
+      var(--dark0) 100px,
+      var(--dark0) calc(100% - 100px),
+      var(--dark) 100%
+    ),
+    url("./assets/bg-logo.png"), url("./assets/bg-logo.png");
+  background-repeat: no-repeat;
+  background-position:
+    50% 50%,
+    50% 50%,
+    calc(50% - 540px) 25%,
+    calc(50% + 540px) 25%;
+  background-size:
+    100% 100%,
+    100% 100%,
+    867px auto,
+    867px auto;
+  opacity: 0.15;
+}
+
+@media only screen and (max-width: 999px) {
+  .about .join {
+    padding: 80px 20px 120px;
+  }
+
+  .about .join .title {
+    font-size: 36px;
+    line-height: 1.1;
+  }
+
+  .about .join .descr {
+    font-size: 16px;
+    line-height: 1.5;
+    padding: 0 10px;
+  }
+
+  .about .join .btn {
+    font-size: 16px;
+    padding: 12px 30px;
+    min-width: 180px;
+  }
+
+  .about .join .bg {
+    background-position:
+      50% 50%,
+      50% 50%,
+      calc(50% - 380px) 20%,
+      calc(50% + 380px) 20%;
+  }
+}
+
+.about .join .js_detect-scroll > * {
+  backface-visibility: hidden;
+  transition-property: transform, opacity;
+  transition-duration: 0.8s;
+  transition-timing-function: ease;
+  transform: translate3d(0, 0, 0);
+}
+
+.about .join .js_detect-scroll:not(.visible) > * {
+  opacity: 0;
+  pointer-events: none;
+  transform: translate3d(0, var(--distance), 0);
+}
+
+.about .join .js_detect-scroll > *:nth-child(1) {
+  transition-delay: 0s;
+}
+
+.about .join .js_detect-scroll > *:nth-child(2) {
+  transition-delay: 0.1s;
+}
+
+.about .join .js_detect-scroll > *:nth-child(3) {
+  transition-delay: 0.2s;
+}
+
+.about .join .js_detect-scroll > *:nth-child(4) {
+  transition-delay: 0.3s;
+}
+
+/* Scroll animations visible class */
+.about .js_detect-scroll.visible .title,
+.about .js_detect-scroll.visible .text,
+.about .js_detect-scroll.visible .descr,
+.about .js_detect-scroll.visible li,
+.about .js_detect-scroll.visible .inner,
+.about .js_detect-scroll.visible > * {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+}

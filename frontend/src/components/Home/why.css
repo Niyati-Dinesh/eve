@@ -3,7 +3,12 @@
 ========================= */
 #why {
   margin-top: 10%;
-  font-family: Nunito, -apple-system, "Open Sans", system-ui, sans-serif;
+  font-family:
+    Nunito,
+    -apple-system,
+    "Open Sans",
+    system-ui,
+    sans-serif;
 }
 
 /* =========================
@@ -51,7 +56,10 @@
 /* =========================
    BOXES (BASE)
 ========================= */
-.one, .two, .three, .four {
+.one,
+.two,
+.three,
+.four {
   width: 290px;
   height: 250px;
   border: 1px solid rgba(255, 255, 255, 0.15);
@@ -61,7 +69,7 @@
   flex-direction: column;
   justify-content: space-between;
   gap: 0.6rem;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
   cursor: pointer;
   overflow: hidden;
   opacity: 0;
@@ -72,26 +80,50 @@
 /* =========================
    SKEW
 ========================= */
-.one, .two { transform: skewY(5deg) translateY(28px); }
-.one h1, .one h3, .two h1, .two h3 { transform: skewY(-5deg); }
+.one,
+.two {
+  transform: skewY(5deg) translateY(28px);
+}
+.one h1,
+.one h3,
+.two h1,
+.two h3 {
+  transform: skewY(-5deg);
+}
 
-.three, .four { transform: skewY(-5deg) translateY(28px); }
-.three h1, .three h3, .four h1, .four h3 { transform: skewY(5deg); }
+.three,
+.four {
+  transform: skewY(-5deg) translateY(28px);
+}
+.three h1,
+.three h3,
+.four h1,
+.four h3 {
+  transform: skewY(5deg);
+}
 
 /* =========================
    GRADIENTS
 ========================= */
 .one {
-  background: radial-gradient(circle at 90% 90%, #ff14a5b5 0%, rgba(2,6,23,0) 50%), #020617;
+  background:
+    radial-gradient(circle at 90% 90%, #ff14a5b5 0%, rgba(2, 6, 23, 0) 50%),
+    #020617;
 }
 .two {
-  background: radial-gradient(circle at 90% 0%, #ff14a5b5 0%, rgba(2,6,23,0) 50%), #020617;
+  background:
+    radial-gradient(circle at 90% 0%, #ff14a5b5 0%, rgba(2, 6, 23, 0) 50%),
+    #020617;
 }
 .three {
-  background: radial-gradient(circle at 0% 90%, #ff14a5b5 0%, rgba(2,6,23,0) 50%), #020617;
+  background:
+    radial-gradient(circle at 0% 90%, #ff14a5b5 0%, rgba(2, 6, 23, 0) 50%),
+    #020617;
 }
 .four {
-  background: radial-gradient(circle at 0% 0%, #ff14a5b5 0%, rgba(2,6,23,0) 50%), #020617;
+  background:
+    radial-gradient(circle at 0% 0%, #ff14a5b5 0%, rgba(2, 6, 23, 0) 50%),
+    #020617;
 }
 
 /* =========================
@@ -144,74 +176,168 @@
    KEYFRAMES
 ========================= */
 @keyframes fadeUp {
-  to { opacity: 1; transform: translateY(0); }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @keyframes WhyfadeSkewUpRight {
-  to { opacity: 1; transform: skewY(5deg) translateY(0); }
+  to {
+    opacity: 1;
+    transform: skewY(5deg) translateY(0);
+  }
 }
 
 @keyframes WhyfadeSkewUpLeft {
-  to { opacity: 1; transform: skewY(-5deg) translateY(0); }
+  to {
+    opacity: 1;
+    transform: skewY(-5deg) translateY(0);
+  }
 }
 
 /* =========================
-   RESPONSIVE (≤ 768px)
+   RESPONSIVE DESIGN
 ========================= */
-@media(max-width: 768px) {
-  .reasons {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1.5rem;
-    align-items: start;
-    justify-content: center;
+@media (max-width: 1068px) {
+  #why {
+    margin-top: 15%;
+    padding: 0 1rem;
   }
 
-  /* left mobile column (why + video) */
-  .center {
-    order: 2;
+  /* Stack layout vertically */
+  .reasons {
+    flex-direction: column;
+    gap: 2rem;
+    align-items: center;
+  }
+
+  /* Remove skew on mobile for better readability */
+  .one,
+  .two,
+  .three,
+  .four {
+    transform: translateY(28px) !important;
     width: 100%;
-    height: 120%;
+    max-width: 350px;
+    height: auto;
+    min-height: 200px;
+    padding: 25px 20px;
+  }
+
+  .one h1,
+  .one h3,
+  .two h1,
+  .two h3,
+  .three h1,
+  .three h3,
+  .four h1,
+  .four h3 {
+    transform: none !important;
+  }
+
+  /* Adjust columns */
+  .reasons .col1,
+  .reasons .col3 {
+    width: 100%;
+    max-width: 350px;
+    gap: 1.2rem;
+  }
+
+  /* Center video positioning */
+  .center {
     position: relative;
-    display: flex;
-    justify-content: center;
+    width: 120%;
+    height: 900px;
+    pointer-events: none;
   }
 
   .three-agents {
-    position: relative;
     width: 120%;
-    max-width: 320px;
-    height:100%;
-    transform: none;
-    margin: 0 auto;
+    max-width: 1000px;
+    height:1000px;
+    max-height: 100%;
+    opacity: 0.5;
   }
 
-  .why-choose {
-    order: 1;
-    grid-column: 1 / 2;
-    width: 100%;
+  /* Typography adjustments */
+  .why-choose h2 {
+    font-size: 32px;
     text-align: center;
-    margin-bottom: .75rem;
+    margin-bottom: 1.5rem;
+    font-weight: 900;
   }
 
-  /* right mobile column (boxes) */
-  .col1,
-  .col3 {
-    order: 3;
-    grid-column: 2 / 3;
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
+  .reasons h1 {
+    font-size: 24px;
+  }
+
+  .reasons h3 {
+    font-size: 16px;
+    line-height: 1.4;
+  }
+
+  /* Update animations to remove skew */
+  .whys.visible .one,
+  .whys.visible .two,
+  .whys.visible .three,
+  .whys.visible .four {
+    animation: fadeUp 0.7s ease forwards;
+  }
+
+  .whys.visible .one {
+    animation-delay: 0.3s;
+  }
+  .whys.visible .two {
+    animation-delay: 0.5s;
+  }
+  .whys.visible .three {
+    animation-delay: 0.7s;
+  }
+  .whys.visible .four {
+    animation-delay: 0.9s;
+  }
+}
+
+/* Extra small phones */
+@media (max-width: 480px) {
+  #why {
+    margin-top: 20%;
   }
 
   .one,
   .two,
   .three,
   .four {
+    max-width: 100%;
+    padding: 20px 18px;
+    min-height: 180px;
+  }
+
+  .why-choose h2 {
+    font-size: 28px;
+  }
+
+  .reasons h1 {
+    font-size: 22px;
+  }
+
+  .reasons h3 {
+    font-size: 15px;
+  }
+
+  .three-agents {
+    width: 90%;
+  }
+}
+
+/* Large phones / small tablets */
+@media (min-width: 481px) and (max-width: 768px) {
+  .center {
+    height: 350px;
+  }
+
+  .three-agents {
     width: 70%;
-    max-width: 250px;
-    height: 200px;
-    margin: 0 auto;
   }
 }
