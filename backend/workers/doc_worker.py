@@ -5,6 +5,8 @@ Can read and process .docx, .pdf, .txt and other document files!
 NOW WITH PDF/DOCX FILE GENERATION!
 """
 
+from dotenv import load_dotenv, find_dotenv
+load_dotenv(find_dotenv())
 import os
 import time
 import requests
@@ -12,7 +14,6 @@ import base64
 import asyncio
 import google.generativeai as genai
 from worker_base import BaseWorker
-from dotenv import load_dotenv
 from document_parser import process_uploaded_files
 from file_generator import generate_file
 

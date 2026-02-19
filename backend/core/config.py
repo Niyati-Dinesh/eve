@@ -6,8 +6,13 @@ Always route to best worker (multithreading enabled)
 
 import os
 from dotenv import load_dotenv
+from pathlib import Path
 
-load_dotenv()
+load_dotenv(Path(__file__).resolve().parents[1] / ".env")
+
+import sys
+sys.stdout.reconfigure(encoding='utf-8')
+
 
 
 SECRET_KEY = os.getenv("SECRET_KEY", "ORCHESTRATION2026")
@@ -20,7 +25,7 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24  # 24 hours
 # =============================================================================
 
 MASTER_HOST = "0.0.0.0"
-MASTER_PORT = 8000
+MASTER_PORT = 8001
 MASTER_ID = os.getenv("MASTER_ID", "master-1")
 
 MASTER_HEARTBEAT_INTERVAL = 3
@@ -35,7 +40,7 @@ HEALTH_CHECK_INTERVAL = 5
 
 AI_PROVIDER = "groq"
 GROQ_API_KEY = os.getenv("GROQ_API_KEY", "")
-MASTER_AI_MODEL = "groq/compound"  # 🧠 Best for intelligent routing
+MASTER_AI_MODEL = "groq/compound"  # Best for intelligent routing
 
 AI_MAX_TOKENS = 1000
 AI_TEMPERATURE = 0.7

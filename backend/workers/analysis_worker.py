@@ -4,16 +4,20 @@ Specializes in: Multi-step logical reasoning, decision evaluation, trend analysi
 Can read and analyze .docx, .pdf, .txt and data files!
 """
 
+
+from dotenv import load_dotenv, find_dotenv
+load_dotenv(find_dotenv())
+
 import os
 import time
 import requests
 import base64
+
 from groq import Groq
 from worker_base import BaseWorker
-from dotenv import load_dotenv
-from document_parser import process_uploaded_files  # Import our new parser!
+from document_parser import process_uploaded_files
 
-load_dotenv()
+
 
 # Keywords that indicate an image generation task
 IMAGE_KEYWORDS = [
@@ -22,7 +26,7 @@ IMAGE_KEYWORDS = [
     "illustration", "visualize", "sketch", "render image", "photo of",
     "generate picture", "create picture", "artwork", "design image",
     "generate an image", "create an image", "make an image", "an image of",
-    "image showing", "picture showing", "photo showing",
+    "image showing", "picture showing", "photo showing","generate any image",
     # Abbreviations
     "generate img", "create img", "make img", "img of",
     "generate pic", "create pic", "make pic", "pic of",

@@ -4,16 +4,19 @@ Specializes in: Programming, debugging, code generation, algorithms
 Can read and process uploaded code files, documents, etc!
 """
 
+from dotenv import load_dotenv, find_dotenv
+load_dotenv(find_dotenv())
+
 import os
 import time
 import requests
 import base64
 from worker_base import BaseWorker
-from dotenv import load_dotenv
+
 from document_parser import process_uploaded_files  # Import our new parser!
 from openai import OpenAI
 
-load_dotenv()
+
 
 # Keywords that indicate an image generation task
 IMAGE_KEYWORDS = [

@@ -5,6 +5,8 @@ E.V.E. Worker Base - NEW VERSION with Hardware Monitoring & Auto-Registration
 - Supports file processing
 """
 
+from dotenv import load_dotenv, find_dotenv
+load_dotenv(find_dotenv())
 import os
 import time
 import requests
@@ -13,7 +15,7 @@ from fastapi import FastAPI
 from pydantic import BaseModel
 from typing import Optional, List, Dict
 from threading import Thread
-from dotenv import load_dotenv
+
 
 load_dotenv()
 

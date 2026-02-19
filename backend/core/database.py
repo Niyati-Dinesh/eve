@@ -180,10 +180,22 @@ def init_database():
         """)
         print("   ✓ performance_metrics")
         
-        # 9. System_Logs
+        # 9. System_Logs — standalone table, NOT linked to auth_logs.
+        # Auto-repair: if the table exists with the old broken FK schema
+        # (log_id had no SERIAL default, it was a FK to auth_logs), drop and recreate.
+        cursor.execute("""
+        SELECT column_default
+        FROM information_schema.columns
+        WHERE table_name = 'system_logs' AND column_name = 'log_id'
+        """)
+        row = cursor.fetchone()
+        if row is not None and (row['column_default'] is None or 'nextval' not in str(row['column_default'])):
+            print("   ⚠️  system_logs has broken FK schema — dropping and recreating...")
+            cursor.execute("DROP TABLE IF EXISTS system_logs CASCADE")
+
         cursor.execute("""
         CREATE TABLE IF NOT EXISTS system_logs (
-            log_id INTEGER PRIMARY KEY REFERENCES auth_logs(log_id),
+            log_id SERIAL PRIMARY KEY,
             log_type VARCHAR(10) NOT NULL,
             message TEXT NOT NULL,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -333,7 +345,7 @@ def get_available_agents(task_type: str = None) -> List[Dict]:
     
     try:
         # Get agents updated in last 30 seconds
-        # For 'general' or 'image_generation' tasks, return ALL workers (they all can generate images)
+        # For 'general' or 'image_generation' tasks, return ALL workers
         if task_type and task_type not in ['general', 'image_generation']:
             cursor.execute("""
             SELECT * FROM ai_agents
@@ -618,8 +630,8 @@ def get_recent_contexts(limit: int = 10) -> List[Dict]:
 
 def get_last_n_messages(conversation_id: str, n: int = 10) -> List[Dict]:
     """
-    Get last N messages from a conversation for context
-    Returns messages in chronological order (oldest first)
+    Get last N messages from a conversation for context.
+    Returns messages in chronological order (oldest first).
     """
     if not conversation_id:
         return []
@@ -628,7 +640,6 @@ def get_last_n_messages(conversation_id: str, n: int = 10) -> List[Dict]:
     cursor = conn.cursor()
     
     try:
-        # Get recent messages from conversation
         cursor.execute("""
         SELECT 
             message_id,
@@ -656,14 +667,13 @@ def get_last_n_messages(conversation_id: str, n: int = 10) -> List[Dict]:
 
 def create_or_get_conversation(conversation_id: str, user_id: int = 1) -> str:
     """
-    Create a new conversation or get existing one
-    Returns conversation_id
+    Create a new conversation or get existing one.
+    Returns conversation_id.
     """
     conn = get_connection()
     cursor = conn.cursor()
     
     try:
-        # Insert or update conversation
         cursor.execute("""
         INSERT INTO conversations (conversation_id, user_id, started_at, last_updated, is_active)
         VALUES (%s, %s, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, TRUE)
@@ -687,9 +697,9 @@ def create_or_get_conversation(conversation_id: str, user_id: int = 1) -> str:
 
 def store_message(conversation_id: str, role: str, content: str) -> Optional[int]:
     """
-    Store a message in the conversation
+    Store a message in the conversation.
     role: 'user' or 'assistant'
-    Returns message_id or None on failure
+    Returns message_id or None on failure.
     """
     if not conversation_id or not role or not content:
         return None
@@ -725,19 +735,29 @@ def store_message(conversation_id: str, role: str, content: str) -> Optional[int
 # LOGGING
 # =============================================================================
 
-def log_system_event(log_type: str, message: str, agent_id: int = None, task_id: int = None):
-    """Log system event"""
+def log_system_event(log_type: str, message: str, **kwargs):
+    """
+    Log a system event.
+
+    **kwargs absorbs any legacy keyword arguments (task_id=, agent_id=, etc.)
+    so old call sites don't crash the application while being cleaned up.
+    The extra kwargs are NOT stored — only log_type and message are written.
+    """
     conn = get_connection()
     cursor = conn.cursor()
-    
+
     try:
         cursor.execute("""
-        INSERT INTO system_logs (log_type, message, agent_id, task_id)
-        VALUES (%s, %s, %s, %s)
-        """, (log_type, message, agent_id, task_id))
-        
+        INSERT INTO system_logs (log_type, message)
+        VALUES (%s, %s)
+        """, (log_type, message))
+
         conn.commit()
-        
+
+    except Exception as e:
+        conn.rollback()
+        print(f"⚠️ log_system_event error: {e}")
+
     finally:
         cursor.close()
         conn.close()
@@ -806,12 +826,10 @@ def register_master(master_id: str, host: str = "localhost", port: int = 8000):
 
 def update_master_heartbeat(master_id: str, status: str = "active"):
     """Update master heartbeat - compatibility function"""
-    # Not needed in new schema
     pass
 
 def set_active_master(master_id: str):
     """Set active master - compatibility function"""
-    # Not needed in new schema (single master)
     pass
 
 def get_active_master() -> Optional[Dict]:
@@ -836,7 +854,6 @@ def get_all_masters() -> List[Dict]:
 # AUTO-INITIALIZATION ON MODULE IMPORT
 # =============================================================================
 
-# Automatically initialize database when module is imported
 try:
     init_database()
 except Exception as e:

@@ -445,6 +445,66 @@
     font-size: 15px;
   }
 }
+/* ─── ADD THESE RULES TO YOUR EXISTING auth.css ────────────────────────────── */
+
+/* Forgot password link (replaces the <a> tag approach) */
+.forgot-link {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.4);
+  padding: 0;
+  transition: color 0.2s ease;
+  text-decoration: underline;
+  text-decoration-color: transparent;
+}
+.forgot-link:hover {
+  color: #FF14A5;
+  text-decoration-color: rgba(255, 20, 165, 0.4);
+}
+
+/* Back button */
+.back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.4);
+  font-family: "Manrope", sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 0;
+  margin-bottom: 8px;
+  transition: color 0.2s ease;
+}
+.back-btn:hover { color: rgba(255, 255, 255, 0.75); }
+
+/* Icon circle above forgot-password titles */
+.forgot-icon-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  background: rgba(255, 20, 165, 0.08);
+  border: 1px solid rgba(255, 20, 165, 0.2);
+  margin: 0 auto 12px;
+}
+
+/* Wrapper for forgot-password sub-forms */
+.forgot-form {
+  animation: fadeInUp 0.28s ease-out;
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
 
 @media only screen and (max-width: 480px) {
   .right {

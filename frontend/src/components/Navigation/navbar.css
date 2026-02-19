@@ -30,7 +30,6 @@
   box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.08);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-
   
 }
 
@@ -252,7 +251,7 @@
     background: rgba(20, 20, 30, 0.714);
     -webkit-backdrop-filter: blur(25px);
     backdrop-filter: blur(25px);
-
+    
     border-radius: 20px;
     border: 1px solid rgba(255, 255, 255, 0.1);
     box-shadow:
@@ -316,12 +315,12 @@
   /* Mobile Nav Links */
   .nav-link {
     width: 100%;
-    justify-content: flex-start;
+    justify-content: flex-end;
     padding: 16px 20px;
     border-radius: 14px;
     font-size: 15px;
     font-weight: 500;
-
+    text-align: right;
     margin-bottom: 10px;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }

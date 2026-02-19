@@ -10,11 +10,13 @@ import About from "./components/About/About";
 import AuthComponent from "./components/Auth/AuthComponent";
 import Dashboard from "./components/Chat/Dashboard";
 import ScrollToTop from "./components/ScrollToTop";
+import { ChatProvider } from "./context/ChatContext";
 
 export default function App() {
   return (
     <div className="app">
       <AuthProvider>
+        <ChatProvider>
         <ScrollToTop />
         <Navbar />
         <main className="app-main">
@@ -50,6 +52,7 @@ export default function App() {
           </Routes>
         </main>
         <Footer />
+        </ChatProvider>
       </AuthProvider>
     </div>
   );

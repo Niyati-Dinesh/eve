@@ -17,7 +17,7 @@ export default function Footer() {
           <div className="footer-nav">
             <a href="#home">Home</a>
             <a href="https://naicoits.com/" target="_blank">Company</a>
-            <a href="#contact" target="_blank">Contact</a>
+            <a href="https://naicoits.com/#contactUs" target="_blank">Contact</a>
           </div>
         </div>
 

@@ -1,128 +1,182 @@
 """
-Start E.V.E. System - Master and All Workers
+Start E.V.E. System — Master (port 8001) + All Workers
+Run: python start_system.py
 """
+
 import subprocess
 import time
 import sys
 import os
+import socket
+import requests
+from pathlib import Path
+from dotenv import load_dotenv
 
-# Change to project directory
-os.chdir(os.path.dirname(os.path.abspath(__file__)))
+# ─────────────────────────────────────────────────────────────
+# ALWAYS LOAD ROOT .env (single source of truth)
+# ─────────────────────────────────────────────────────────────
+ROOT_DIR = Path(__file__).resolve().parent
+ENV_PATH = ROOT_DIR / ".env"
 
-print("="*70)
+load_dotenv(ENV_PATH)
+
+# ensure all subprocesses inherit the same env
+ENV = os.environ.copy()
+
+# ─────────────────────────────────────────────────────────────
+# move working directory to backend root
+# ─────────────────────────────────────────────────────────────
+os.chdir(ROOT_DIR)
+
+print("=" * 70)
 print("🚀 STARTING E.V.E. SYSTEM")
-print("="*70)
+print("=" * 70)
+
+# ─────────────────────────────────────────────────────────────
+# read master config FROM ROOT ENV
+# ─────────────────────────────────────────────────────────────
+master_host = os.getenv("MASTER_HOST", "localhost")
+master_port = int(os.getenv("MASTER_PORT", 8001))
+
+print(f"\n📡 Master will bind to: http://{master_host}:{master_port}")
+
+# ─────────────────────────────────────────────────────────────
+# check port availability
+# ─────────────────────────────────────────────────────────────
+with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+    if s.connect_ex(("localhost", master_port)) == 0:
+        print(f"\n⚠️  Port {master_port} already in use")
+        print(f"Check: http://localhost:{master_port}/health")
+        sys.exit(0)
+
+# ─────────────────────────────────────────────────────────────
+# windows console fix
+# ─────────────────────────────────────────────────────────────
+kwargs = {}
+if sys.platform == "win32":
+    kwargs["creationflags"] = subprocess.CREATE_NEW_CONSOLE
 
 
-# Start Master Controller
-print("\n1️⃣  Starting Master Controller...")
+# ─────────────────────────────────────────────────────────────
+# START MASTER
+# ─────────────────────────────────────────────────────────────
+print("\n1️⃣ Starting Master Controller...")
+
+master_script = ROOT_DIR / "master_controller" / "master_controller.py"
+
+if not master_script.exists():
+    print(f"❌ Missing: {master_script}")
+    sys.exit(1)
+
 master_process = subprocess.Popen(
-    [sys.executable, "master_controller/master_controller.py"],
-    creationflags=subprocess.CREATE_NEW_CONSOLE if sys.platform == "win32" else 0
+    [sys.executable, str(master_script)],
+    cwd=str(master_script.parent),
+    env=ENV,
+    **kwargs,
 )
 
-# Wait for master to be healthy
-import requests
-import socket
+print(f"   Master PID: {master_process.pid}")
 
+
+# ─────────────────────────────────────────────────────────────
+# wait for health
+# ─────────────────────────────────────────────────────────────
 def wait_for_master(host, port, timeout=60):
+
     url = f"http://{host}:{port}/health"
     start = time.time()
-    print(f"   Checking: {url}")
-    last_error = None
+
+    print(f"   Polling: {url}")
+
     while time.time() - start < timeout:
         try:
-            resp = requests.get(url, timeout=2)
-            if resp.status_code == 200:
-                data = resp.json()
-                if data.get("status") == "ok":
-                    print("\n✅ Master Controller is healthy!")
+            r = requests.get(url, timeout=2)
+            if r.status_code == 200:
+                if r.json().get("status") == "ok":
+                    print(f"\n   ✅ Master healthy ({int(time.time()-start)}s)")
                     return True
-                else:
-                    print(f"   ⚠️  Unexpected status: {data.get('status')}")
-        except requests.exceptions.ConnectionError as e:
-            last_error = f"Connection error: {str(e)[:50]}"
-        except Exception as e:
-            last_error = f"Error: {str(e)[:100]}"
-        
-        print(f"   Waiting for master... ({int(time.time() - start)}s)")
+        except:
+            pass
+
+        print(f"   Waiting... {int(time.time()-start)}s", end="\r")
         time.sleep(2)
-    
-    print(f"\n❌ Master Controller did not become healthy after {timeout} seconds.")
-    if last_error:
-        print(f"   Last error: {last_error}")
-    print("\n⚠️  Check the Master Controller window for error messages.")
+
+    print("\n❌ Master failed to start")
     return False
 
-# Get host/port from .env or default
-import dotenv
-# Load .env from master_controller folder where it exists
-env_path = os.path.join(os.path.dirname(__file__), 'master_controller', '.env')
-dotenv.load_dotenv(env_path)
-master_host = os.getenv("MASTER_HOST", "localhost")
-master_port = int(os.getenv("MASTER_PORT", "8000"))
 
-if not wait_for_master(master_host, master_port, timeout=60):
-    print("\n🔍 Troubleshooting steps:")
-    print("   1. Check the Master Controller console window for errors")
-    print("   2. Verify PostgreSQL database is accessible")
-    print("   3. Ensure GROQ_API_KEY is set in master_controller/.env")
-    print("   4. Check if port 8000 is already in use")
-    print("\nExiting due to master startup failure.")
+if not wait_for_master(master_host, master_port):
     master_process.terminate()
     sys.exit(1)
 
-# Give master extra time to fully initialize
-print("   Giving master additional time to initialize...")
-time.sleep(5)
+time.sleep(3)
 
-# Start Workers
-print("\n2️⃣  Starting Workers...")
+
+# ─────────────────────────────────────────────────────────────
+# START WORKERS
+# ─────────────────────────────────────────────────────────────
+print("\n2️⃣ Starting Workers...")
 
 workers = [
     ("Coding Worker", "workers/coding_worker.py"),
     ("Documentation Worker", "workers/doc_worker.py"),
-    ("Analysis Worker", "workers/analysis_worker.py")
+    ("Analysis Worker", "workers/analysis_worker.py"),
 ]
 
 worker_processes = []
-for name, path in workers:
+
+for name, rel in workers:
+
+    script = ROOT_DIR / rel
+
+    if not script.exists():
+        print(f"⚠️ Missing worker: {script}")
+        continue
+
     print(f"   Starting {name}...")
-    process = subprocess.Popen(
-        [sys.executable, path],
-        creationflags=subprocess.CREATE_NEW_CONSOLE if sys.platform == "win32" else 0
+
+    p = subprocess.Popen(
+        [sys.executable, str(script)],
+        cwd=str(ROOT_DIR),
+        env=ENV,
+        **kwargs,
     )
-    worker_processes.append(process)
-    time.sleep(4)  # Increased delay between workers to prevent overwhelming master
 
-# Wait for workers to register with master
-print("\n3️⃣  Verifying worker registration...")
-time.sleep(6)  # Give workers time to complete registration and send first heartbeat
+    worker_processes.append(p)
+    time.sleep(4)
 
-try:
-    check_url = f"http://{master_host}:{master_port}/health"
-    resp = requests.get(check_url, timeout=5)
-    print("   ✅ All systems ready!")
-except:
-    print("   ⚠️  Workers may still be registering...")
 
-print("\n" + "="*70)
+# ─────────────────────────────────────────────────────────────
+# FINAL STATUS
+# ─────────────────────────────────────────────────────────────
+time.sleep(5)
+
+print("\n" + "=" * 70)
 print("✅ E.V.E. SYSTEM RUNNING")
-print("="*70)
-print("\n📱 Open your browser to: http://localhost:8000/user_interface.html")
-print("\n🔧 Master Controller: http://localhost:8000")
-print("   - Coding Worker: http://localhost:5001")
-print("   - Documentation Worker: http://localhost:5002")
-print("   - Analysis Worker: http://localhost:5003")
-print("\n💡 Press Ctrl+C to stop all services")
-print("="*70 + "\n")
+print("=" * 70)
 
+print(f"\nMaster : http://localhost:{master_port}")
+print(f"Health : http://localhost:{master_port}/health")
+print(f"Workers: http://localhost:{master_port}/list_workers")
+
+print("\nBackend : http://localhost:8000")
+print("Frontend: http://localhost:5173")
+
+print("\nPress Ctrl+C to stop")
+
+# ─────────────────────────────────────────────────────────────
+# shutdown
+# ─────────────────────────────────────────────────────────────
 try:
-    # Keep running
     master_process.wait()
+
 except KeyboardInterrupt:
-    print("\n\n🛑 Stopping all services...")
+
+    print("\n🛑 Stopping services...")
+
     master_process.terminate()
-    for process in worker_processes:
-        process.terminate()
-    print("✅ All services stopped")
+
+    for p in worker_processes:
+        p.terminate()
+
+    print("✅ Stopped")

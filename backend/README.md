@@ -19,6 +19,57 @@ E.V.E. (Evolutionary Virtual Engine) is a master-worker architecture system that
 - PostgreSQL database
 - GROQ API key ([Get one here](https://console.groq.com))
 
+## How To Run
+
+- navigate to frontend folder
+```bash
+cd frontend
+```
+
+- install necessary packages
+```bash
+npm i
+```
+
+- navigate to backend
+```bash
+cd ../backend
+```
+
+- create python virtual environment
+```bash
+python -m venv venv
+```
+
+- choose python intepreter 
+```bash
+ctrl+shift+P -> python: select intepreter -> choose an intepreter with venv\Scripts\python.exe
+```
+
+- activate virtual environment
+```bash
+venv/Scripts/activate
+```
+
+- install necessary backend requirements
+```bash
+pip install -r requirements.txt
+```
+
+- create one main .env inside backend
+
+- start the backend
+```bash
+uvicorn main:app --reload
+```
+
+- start the frontend
+```bash
+npm run dev 
+```
+
+
+
 ## Project Status
 
 🚧 **Currently in Development**

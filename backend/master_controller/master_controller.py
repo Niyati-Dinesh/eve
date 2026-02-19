@@ -5,6 +5,17 @@ NEW FEATURES:
 - Answer Validation: Checks quality before returning
 - Multi-step Execution: Sequential task handling
 """
+import sys, os
+
+# ── Path setup: make local modules and backend package importable ─────────────
+_HERE = os.path.dirname(os.path.abspath(__file__))          # .../master_controller/
+_BACKEND = os.path.abspath(os.path.join(_HERE, ".."))       # .../backend/
+_PROJECT = os.path.abspath(os.path.join(_HERE, "..", "..")) # .../E.V.E/
+
+for _p in [_HERE, _BACKEND, _PROJECT]:
+    if _p not in sys.path:
+        sys.path.insert(0, _p)
+# ─────────────────────────────────────────────────────────────────────────────
 
 from fastapi import FastAPI, HTTPException, UploadFile, File, Form, Response
 from fastapi.middleware.cors import CORSMiddleware
@@ -26,29 +37,26 @@ if sys.platform == "win32":
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
 # Import modules
-from backend.core.database import (
+from core.database import (
     init_database, register_agent, update_agent_heartbeat,
     get_available_agents, create_task, store_execution_result,
     log_system_event, get_system_stats, store_message,
     create_or_get_conversation, get_last_n_messages, assign_task_to_agent
 )
-from backend.core.config import MASTER_HOST, MASTER_PORT, MASTER_ID, GROQ_API_KEY
+from core.config import MASTER_HOST, MASTER_PORT, MASTER_ID, GROQ_API_KEY
 
-# 🆕 NEW IMPORTS
+# NEW IMPORTS
 from task_planner import TaskPlanner
 from answer_validator import AnswerValidator
 from context_manager import ContextManager
 
-# 🚀 ENHANCED SYSTEMS (v9.5)
+# ENHANCED SYSTEMS (v9.5)
 from worker_health_monitor import WorkerHealthMonitor
 from response_cache import ResponseCache
 from performance_analytics import PerformanceAnalytics
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'workers'))
-import sys
-import os
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'workers')))
-from document_parser import parse_document
+from workers.document_parser import parse_document
+
 
 # =============================================================================
 # INTELLIGENT CORE - Now with Planning & Validation
@@ -64,12 +72,12 @@ class IntelligentRouter:
         self.client = Groq(api_key=groq_api_key) if groq_api_key else None
         self.worker_stats = {}  # Simple success tracking
         
-        # 🆕 NEW: Add planner, validator, and context manager
+        # NEW: Add planner, validator, and context manager
         self.planner = TaskPlanner(groq_api_key)
         self.validator = AnswerValidator(groq_api_key)
         self.context_manager = ContextManager(groq_api_key)
         
-        # 🚀 ENHANCED SYSTEMS (v9.5)
+        # ENHANCED SYSTEMS (v9.5)
         self.health_monitor = WorkerHealthMonitor()
         self.cache = ResponseCache(ttl_seconds=3600, max_entries=1000)
         self.analytics = PerformanceAnalytics()
@@ -213,7 +221,7 @@ Respond with JSON:
         for worker in available:
             name = worker['agent_name']
             
-            # 🚀 Check health status first
+            # Check health status first
             health = self.health_monitor.check_worker_health(name)
             if health in ["dead", "unhealthy"]:
                 print(f"      ⚠️ Skipping {name} - health: {health}")
@@ -228,7 +236,7 @@ Respond with JSON:
             else:
                 success_rate = 0.9  # Assume good performance for new workers
             
-            # 🚀 Enhanced scoring with health bonus
+            # Enhanced scoring with health bonus
             score = success_rate + (min(stats['total'], 10) * 0.01)
             if health == "healthy":
                 score *= 1.1  # 10% bonus for healthy workers
@@ -255,10 +263,10 @@ Respond with JSON:
         if success:
             self.worker_stats[worker_name]['success'] += 1
         else:
-            # 🚀 Record failure in health monitor
+            # Record failure in health monitor
             self.health_monitor.record_failure(worker_name)
         
-        # 🚀 Record in analytics
+        # Record in analytics
         self.analytics.record_worker_task(worker_name, success, duration, quality_score)
     
     def answer_directly(self, message: str, conversation_history: List[Dict] = None) -> str:
@@ -392,7 +400,7 @@ router = None
 file_processor = FileProcessor()
 worker_executor = WorkerExecutor()
 
-# 📄 File storage for generated documents
+# File storage for generated documents
 generated_files = {}  # {file_id: {"data": bytes, "filename": str, "mime_type": str}}
 
 # =============================================================================
@@ -516,7 +524,7 @@ async def process_message(
     else:
         step_type = task_plan['steps'][0]
         
-        # 🚀 MASTER HANDLES SIMPLE QUERIES DIRECTLY (no worker needed)
+        # MASTER HANDLES SIMPLE QUERIES DIRECTLY (no worker needed)
         if step_type == "general" and len(message.strip()) < 50:
             print(f"\n🧠 Simple query - Master handling directly")
             response_text = router.answer_directly(message, history)
@@ -565,7 +573,7 @@ async def execute_single_step(
     
     task_id = create_task(user_id=1, task_desc=message, task_type=step_type, priority=1)
     
-    # 🆕 INTELLIGENT CONTEXT ANALYSIS
+    # INTELLIGENT CONTEXT ANALYSIS
     print(f"\n📍 STEP 1: Context Analysis")
     smart_context, context_analysis = router.context_manager.get_smart_context(
         message, history, file_context
@@ -575,7 +583,6 @@ async def execute_single_step(
     print(f"   Planned step type: {step_type.upper()}")
     
     # Use the step_type from planner, don't re-route!
-    # The planner already decided this intelligently
     response_text = None
     worker_name = None
     success = False
@@ -601,7 +608,8 @@ async def execute_single_step(
                 "coding": ["general", "analysis"],
                 "documentation": ["general", "analysis"],
                 "analysis": ["general", "documentation"],
-                "general": ["analysis", "documentation", "coding"]
+                "general": ["analysis", "documentation", "coding"],
+                "image_generation": ["coding", "analysis", "general"],  # any worker can generate images
             }
             fallbacks = fallback_map.get(worker_type, ["general"])
             for fallback_type in fallbacks:
@@ -609,7 +617,7 @@ async def execute_single_step(
                 available = get_available_agents(task_type=fallback_type)
                 if available:
                     print(f"   ✅ Found {len(available)} {fallback_type} worker(s)")
-                    worker_type = fallback_type  # Update worker type for selection
+                    worker_type = fallback_type
                     break
         else:
             print(f"   ✅ Found {len(available)} {worker_type} worker(s)")
@@ -619,9 +627,13 @@ async def execute_single_step(
             
             if worker:
                 print(f"   📤 Assigning task to {worker['agent_name']}...")
-                assign_task_to_agent(task_id, worker['agent_id'], order=1)
+                try:
+                    assign_task_to_agent(task_id, worker['agent_id'], order=attempt+1)
+                except Exception as _assign_err:
+                    # task_assignments PK conflict on retry is non-fatal
+                    print(f"   ⚠️ Task assignment note: {_assign_err}")
                 
-                # 🆕 Send smart context to worker (not just file context)
+                # Send smart context to worker
                 response_text, success, duration, extra_data = worker_executor.execute(
                     worker, message, file_data, smart_context
                 )
@@ -648,8 +660,8 @@ async def execute_single_step(
             print("   🧠 Master handling directly...")
             response_text = router.answer_directly(message, history)
             worker_name = "Master-Controller"
-            success = True  # Master fallback is considered successful
-            duration = 0.0  # Fallback has no worker duration
+            success = True
+            duration = 0.0
             extra_data = {}
         
         # VALIDATE THE ANSWER
@@ -665,7 +677,7 @@ async def execute_single_step(
         if extra_data and "file" in extra_data:
             print(f"   📎 File data present: {extra_data['file'].get('filename', 'unknown')}")
         
-        # 🚀 Enhanced logging with quality score after validation
+        # Enhanced logging with quality score after validation
         quality_score = validation.get('quality_score', None)
         router.log_result(worker_name, success, duration, quality_score)
         
@@ -676,7 +688,6 @@ async def execute_single_step(
             print(f"   ⚠️  Quality too low (threshold: 6/10)")
             if attempt < max_retries - 1:
                 print("   ↻ Retrying with different worker...")
-                # On retry, the loop will try to find another worker or fallback
             else:
                 print("   ⚠️  Max retries reached - using current answer")
     
@@ -771,8 +782,9 @@ async def register_agent_endpoint(data: dict):
         hardware_stats = data.get('hardware_stats', {})
         
         agent_id = register_agent(agent_name, capability, host, port, hardware_stats)
-        
-        log_system_event('info', f"Agent {agent_name} registered", agent_id=agent_id)
+
+        # FIX: log_system_event only accepts log_type and message - no agent_id kwarg
+        log_system_event("info", f"Agent {agent_name} registered (ID: {agent_id})")
         
         print(f"✅ Agent registered: {agent_name} (ID: {agent_id})")
         print(f"   Type: {capability}")
@@ -793,7 +805,7 @@ async def agent_heartbeat_endpoint(data: dict):
         
         update_agent_heartbeat(agent_name, status, hardware_stats)
         
-        # 🚀 Update health monitor
+        # Update health monitor
         if router:
             router.health_monitor.update_heartbeat(agent_name, status)
         
@@ -841,7 +853,7 @@ def health_check():
 
 @app.get("/diagnostics")
 def get_diagnostics():
-    """🚀 Comprehensive system diagnostics and performance report"""
+    """Comprehensive system diagnostics and performance report"""
     try:
         if not router:
             return {"error": "Router not initialized"}
@@ -863,7 +875,7 @@ def get_diagnostics():
         # Overall system score
         system_score = (
             worker_health_score * 0.4 +  # 40% worker health
-            cache_score * 0.2 +  # 20% cache efficiency
+            cache_score * 0.2 +          # 20% cache efficiency
             min(validation_stats.get("avg_quality", 0), 10) * 0.4  # 40% answer quality
         )
         
@@ -891,7 +903,7 @@ def clear_cache():
     except Exception as e:
         return {"error": str(e)}
 
-# File storage for downloads (in-memory for now)
+# File storage for downloads (in-memory)
 _file_storage = {}
 
 @app.post("/store_file")

@@ -3,13 +3,14 @@ Image Analyzer for E.V.E. System
 Uses Gemini Vision API to analyze image content and determine routing
 """
 
+from dotenv import load_dotenv, find_dotenv
+load_dotenv(find_dotenv())
 import base64
 import os
 from typing import Dict, Tuple
 import google.generativeai as genai
-from dotenv import load_dotenv
 
-load_dotenv()
+
 
 
 # Use Ollama Cloud Llava 34B as primary, Gemini as fallback
