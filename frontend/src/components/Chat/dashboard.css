@@ -1174,7 +1174,7 @@
   background: rgba(0, 0, 0, 0.6);
   -webkit-backdrop-filter: blur(8px);
   backdrop-filter: blur(8px);
-  
+  margin-top: 8%;
   z-index: 99999;
   display: flex;
   align-items: center;

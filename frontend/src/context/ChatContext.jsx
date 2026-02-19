@@ -1,9 +1,4 @@
 // context/ChatContext.jsx
-// Changes from previous version:
-//   • Added deletingIds state (Set) for delete slide-out animation
-//   • removeConversation: marks ID as deleting immediately, waits 350ms then removes
-//   • Everything else is identical
-
 import {
   createContext,
   useContext,
@@ -26,6 +21,16 @@ export function ChatProvider({ children }) {
   const [isLoading, setIsLoading]                       = useState(false);
   const [hasStartedChat, setHasStartedChat]             = useState(false);
   const [deletingIds, setDeletingIds]                   = useState(new Set());
+
+  // ── KEY FIX: reset ALL chat state whenever the user changes (login/logout) ──
+  useEffect(() => {
+    setMessages([]);
+    setConversationId(null);
+    setHasStartedChat(false);
+    setConversations([]);
+    setDeletingIds(new Set());
+    setIsLoading(false);
+  }, [user]);
 
   const refreshConversations = useCallback(async () => {
     if (!user) { setConversations([]); return; }
@@ -139,16 +144,13 @@ export function ChatProvider({ children }) {
     [conversationId, isLoading, refreshConversations]
   );
 
-  // Delete with animation: add to deletingIds → CSS animates out → remove from list
   const removeConversation = useCallback(
     async (convId) => {
-      // Immediately mark as deleting — CSS transition fires instantly
       setDeletingIds((prev) => new Set([...prev, convId]));
 
       try {
         await deleteConversation(convId);
       } catch (err) {
-        // Revert on failure
         setDeletingIds((prev) => {
           const next = new Set(prev);
           next.delete(convId);
@@ -158,7 +160,6 @@ export function ChatProvider({ children }) {
         return;
       }
 
-      // Wait for CSS animation (350ms) then remove from list
       setTimeout(() => {
         setConversations((prev) =>
           prev.filter((c) => c.conversation_id !== convId)
